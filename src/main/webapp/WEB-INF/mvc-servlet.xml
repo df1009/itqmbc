@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <!-- ①：对web包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 -->
+    <context:component-scan base-package="com.itqmbc.common.controller"/>
+	<mvc:annotation-driven />
+	<!--aop执行操作的类-->
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<bean id="LogAop" class="com.zhongchou.common.log.LogAop"/> -->
+	  <!-- ②：启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+<!-- 激活自动代理功能 -->
+    <aop:aspectj-autoproxy proxy-target-class="false"/>
+    <!-- 系统服务组件的切面Bean -->
+    <bean id="aspectService" class="com.itqmbc.common.log.AspectService"></bean>
+    <!-- AOP配置 -->
+    <aop:config>
+        <!-- 声明一个切面,并注入切面Bean,相当于@Aspect -->
+        <aop:aspect id="simpleAspect" ref="aspectService">
+            <!-- 配置一个切入点,相当于@Pointcut -->
+            <aop:pointcut expression="execution(* com.itqmbc.common..*(..))" id="simplePointcut"/>
+            <aop:after-throwing pointcut-ref="simplePointcut" method="afterThrow" throwing="ex"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
